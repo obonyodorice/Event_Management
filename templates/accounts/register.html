@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}Register - EventVenue{% endblock %}
+
+{% block content %}
+<div class="hero" style="padding: 2rem 0; margin-bottom: 2rem;">
+    <h1 style="font-size: 2.5rem;">Create Your Account</h1>
+    <p>Join EventVenue and start discovering amazing venues for your events</p>
+</div>
+
+<div class="content-card" style="max-width: 500px; margin: 0 auto;">
+    <div class="card-title">
+        <i class="fas fa-user-plus"></i>
+        Sign Up
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}" style="background: {% if message.tags == 'error' %}var(--error){% else %}var(--success){% endif %}; color: white; padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-{% if message.tags == 'error' %}exclamation-triangle{% else %}check-circle{% endif %}"></i>
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post" action="{% url 'accounts:register' %}" id="registerForm">
+        {% csrf_token %}
+        
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label for="username" style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--gray-700);">Username</label>
+            <input
+                type="text"
+                id="username"
+                name="username"
+                placeholder="Enter your username"
+                minlength="3"
+                required
+                style="width: 100%; padding: 1rem; border: 2px solid var(--gray-200); border-radius: 12px; font-size: 1rem; transition: all 0.3s ease; background: var(--gray-50);"
+                onfocus="this.style.borderColor='var(--primary)'; this.style.background='white'; this.style.transform='translateY(-2px)'"
+                onblur="this.style.borderColor='var(--gray-200)'; this.style.background='var(--gray-50)'; this.style.transform='translateY(0)'"
+            />
+            <small style="color: var(--gray-500); font-size: 0.85rem; margin-top: 0.25rem; display: block;">
+                Username must be at least 3 characters long (letters, numbers, and underscores only)
+            </small>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label for="email" style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--gray-700);">Email</label>
+            <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="you@example.com"
+                required
+                style="width: 100%; padding: 1rem; border: 2px solid var(--gray-200); border-radius: 12px; font-size: 1rem; transition: all 0.3s ease; background: var(--gray-50);"
+                onfocus="this.style.borderColor='var(--primary)'; this.style.background='white'; this.style.transform='translateY(-2px)'"
+                onblur="this.style.borderColor='var(--gray-200)'; this.style.background='var(--gray-50)'; this.style.transform='translateY(0)'"
+            />
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label for="password" style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--gray-700);">Password</label>
+            <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="••••••••"
+                minlength="6"
+                required
+                style="width: 100%; padding: 1rem; border: 2px solid var(--gray-200); border-radius: 12px; font-size: 1rem; transition: all 0.3s ease; background: var(--gray-50);"
+                onfocus="this.style.borderColor='var(--primary)'; this.style.background='white'; this.style.transform='translateY(-2px)'"
+                onblur="this.style.borderColor='var(--gray-200)'; this.style.background='var(--gray-50)'; this.style.transform='translateY(0)'"
+            />
+            <small style="color: var(--gray-500); font-size: 0.85rem; margin-top: 0.25rem; display: block;">
+                Password must be at least 6 characters long
+            </small>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 2rem;">
+            <label for="confirm_password" style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--gray-700);">Confirm Password</label>
+            <input
+                type="password"
+                id="confirm_password"
+                name="confirm_password"
+                placeholder="••••••••"
+                minlength="6"
+                required
+                style="width: 100%; padding: 1rem; border: 2px solid var(--gray-200); border-radius: 12px; font-size: 1rem; transition: all 0.3s ease; background: var(--gray-50);"
+                onfocus="this.style.borderColor='var(--primary)'; this.style.background='white'; this.style.transform='translateY(-2px)'"
+                onblur="this.style.borderColor='var(--gray-200)'; this.style.background='var(--gray-50)'; this.style.transform='translateY(0)'"
+            />
+            <small style="color: var(--gray-500); font-size: 0.85rem; margin-top: 0.25rem; display: block;">
+                Re-enter your password to confirm
+            </small>
+        </div>
+
+        <button 
+            type="submit" 
+            class="view-btn" 
+            style="width: 100%; margin-bottom: 1.5rem; justify-content: center; padding: 1.2rem 2rem; font-size: 1.1rem;"
+        >
+            <i class="fas fa-user-plus"></i>
+            Create Account
+        </button>
+    </form>
+
+    <div style="text-align: center; padding-top: 1.5rem; border-top: 1px solid var(--gray-200);">
+        <p style="color: var(--gray-600); margin-bottom: 1rem;">Already have an account?</p>
+        <a href="{% url 'accounts:login' %}" class="contact-btn" style="background: var(--gray-100); color: var(--gray-800); border-color: var(--gray-300); text-decoration: none; display: inline-flex;">
+            <i class="fas fa-sign-in-alt"></i>
+            Sign In
+        </a>
+    </div>
+</div>
+
+<script>
+// Form validation
+document.getElementById('registerForm').addEventListener('submit', function(e) {
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirm_password').value;
+    
+    if (password !== confirmPassword) {
+        e.preventDefault();
+        alert('Passwords do not match!');
+        document.getElementById('confirm_password').focus();
+        return false;
+    }
+    
+    if (password.length < 6) {
+        e.preventDefault();
+        alert('Password must be at least 6 characters long!');
+        document.getElementById('password').focus();
+        return false;
+    }
+});
+
+// Real-time password confirmation check
+document.getElementById('confirm_password').addEventListener('input', function() {
+    const password = document.getElementById('password').value;
+    const confirmPassword = this.value;
+    
+    if (confirmPassword && password !== confirmPassword) {
+        this.style.borderColor = 'var(--error)';
+        this.style.background = 'rgba(239, 68, 68, 0.05)';
+    } else if (confirmPassword && password === confirmPassword) {
+        this.style.borderColor = 'var(--success)';
+        this.style.background = 'rgba(16, 185, 129, 0.05)';
+    }
+});
+</script>
+{% endblock %}

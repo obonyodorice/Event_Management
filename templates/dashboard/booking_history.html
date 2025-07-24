@@ -1,0 +1,778 @@
+{% extends '../base.html' %}
+
+{% block title %}Booking Details - {{ booking.venue.name }}{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="hero">
+    <h1>Booking Details</h1>
+    <p>Complete information about your venue reservation</p>
+</div>
+
+<!-- Booking Status Banner -->
+<div class="status-banner {{ status_class }}">
+    <div class="status-content">
+        <div class="status-icon">
+            {% if status == 'completed' %}
+                <i class="fas fa-check-circle"></i>
+            {% elif status == 'today' %}
+                <i class="fas fa-calendar-day"></i>
+            {% else %}
+                <i class="fas fa-clock"></i>
+            {% endif %}
+        </div>
+        <div class="status-text">
+            <h3>
+                {% if status == 'completed' %}
+                    Event Completed
+                {% elif status == 'today' %}
+                    Event is Today!
+                {% else %}
+                    Upcoming Event
+                {% endif %}
+            </h3>
+            <p>
+                {% if status == 'completed' %}
+                    Your event at {{ booking.venue.name }} has been completed.
+                {% elif status == 'today' %}
+                    Your event at {{ booking.venue.name }} is scheduled for today.
+                {% else %}
+                    Your event at {{ booking.venue.name }} is coming up soon.
+                {% endif %}
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content Grid -->
+<div class="venue-content-grid">
+    <div class="venue-main-content">
+        <!-- Venue Information -->
+        <div class="detail-card">
+            <h2 class="card-title">
+                <i class="fas fa-building"></i>
+                Venue Information
+            </h2>
+            
+            <div class="venue-showcase">
+                {% if booking.venue.image %}
+                    <div class="venue-image">
+                        <img src="{{ booking.venue.image.url }}" alt="{{ booking.venue.name }}">
+                    </div>
+                {% else %}
+                    <div class="venue-image-placeholder">
+                        <i class="fas fa-building"></i>
+                        {{ booking.venue.name }}
+                    </div>
+                {% endif %}
+                
+                <div class="venue-details">
+                    <h3>{{ booking.venue.name }}</h3>
+                    <div class="venue-location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        {{ booking.venue.location }}
+                    </div>
+                    <div class="venue-capacity">
+                        <i class="fas fa-users"></i>
+                        Capacity: {{ booking.venue.capacity }} guests
+                    </div>
+                    <div class="venue-rate">
+                        <i class="fas fa-dollar-sign"></i>
+                        ${{ booking.venue.price_per_hour }}/hour
+                    </div>
+                    
+                    <div class="venue-actions">
+                        <a href="{% url 'venue:detail' booking.venue.id %}" class="venue-btn">
+                            <i class="fas fa-external-link-alt"></i>
+                            View Full Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Event Details -->
+        <div class="detail-card">
+            <h2 class="card-title">
+                <i class="fas fa-calendar-alt"></i>
+                Event Details
+            </h2>
+            
+            <div class="event-details-grid">
+                <div class="detail-item-large">
+                    <div class="detail-icon">
+                        <i class="fas fa-calendar"></i>
+                    </div>
+                    <div class="detail-content">
+                        <span class="detail-label">Event Date</span>
+                        <span class="detail-value">{{ booking.event_date|date:"l, F d, Y" }}</span>
+                    </div>
+                </div>
+                
+                <div class="detail-item-large">
+                    <div class="detail-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="detail-content">
+                        <span class="detail-label">Start Time</span>
+                        <span class="detail-value">{{ booking.start_time|time:"g:i A" }}</span>
+                    </div>
+                </div>
+                
+                <div class="detail-item-large">
+                    <div class="detail-icon">
+                        <i class="fas fa-hourglass-half"></i>
+                    </div>
+                    <div class="detail-content">
+                        <span class="detail-label">Duration</span>
+                        <span class="detail-value">{{ booking.duration }} hours</span>
+                    </div>
+                </div>
+                
+                <div class="detail-item-large">
+                    <div class="detail-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="detail-content">
+                        <span class="detail-label">Expected Guests</span>
+                        <span class="detail-value">{{ booking.guests }} people</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Timeline -->
+            <div class="event-timeline">
+                <h4>Event Timeline</h4>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <span class="timeline-title">Event Start</span>
+                            <span class="timeline-time">{{ booking.start_time|time:"g:i A" }}</span>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <span class="timeline-title">Event End</span>
+                            <span class="timeline-time">
+                                {% load custom_filters %}
+                                {{ booking.start_time|add_hours:booking.duration|time:"g:i A" }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Amenities -->
+        {% if booking.venue.get_amenities_list %}
+        <div class="detail-card">
+            <h2 class="card-title">
+                <i class="fas fa-concierge-bell"></i>
+                Available Amenities
+            </h2>
+            <div class="amenities-grid">
+                {% for amenity in booking.venue.get_amenities_list %}
+                    <div class="amenity-item">
+                        <div class="amenity-icon">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="amenity-text">{{ amenity }}</div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Sidebar -->
+    <div class="venue-sidebar">
+        <!-- Booking Summary -->
+        <div class="booking-card">
+            <h3 class="booking-card-title">Booking Summary</h3>
+            
+            <div class="summary-details">
+                <div class="summary-row">
+                    <span class="summary-label">Booking ID</span>
+                    <span class="summary-value">#{{ booking.id|stringformat:"05d" }}</span>
+                </div>
+                
+                <div class="summary-row">
+                    <span class="summary-label">Booked On</span>
+                    <span class="summary-value">{{ booking.created_at|date:"M d, Y" }}</span>
+                </div>
+                
+                <div class="summary-divider"></div>
+                
+                <div class="summary-row">
+                    <span class="summary-label">Rate per Hour</span>
+                    <span class="summary-value">${{ booking.venue.price_per_hour }}</span>
+                </div>
+                
+                <div class="summary-row">
+                    <span class="summary-label">Duration</span>
+                    <span class="summary-value">{{ booking.duration }} hours</span>
+                </div>
+                
+                <div class="summary-divider"></div>
+                
+                <div class="summary-row total">
+                    <span class="summary-label">Total Amount</span>
+                    <span class="summary-value">${{ booking.total_price }}</span>
+                </div>
+            </div>
+            
+            <div class="booking-actions">
+                {% if status == 'upcoming' %}
+                    <button class="action-btn-full warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Cancel Booking
+                    </button>
+                {% endif %}
+                
+                {% if status == 'completed' %}
+                    <button class="action-btn-full success">
+                        <i class="fas fa-star"></i>
+                        Leave a Review
+                    </button>
+                {% endif %}
+                
+                <button class="action-btn-full outline" onclick="window.print()">
+                    <i class="fas fa-print"></i>
+                    Print Details
+                </button>
+            </div>
+        </div>
+        
+        <!-- Contact Information -->
+        <div class="detail-card">
+            <h3 class="card-title">
+                <i class="fas fa-phone"></i>
+                Need Help?
+            </h3>
+            
+            <div class="contact-options">
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <div class="contact-info">
+                        <span class="contact-label">Call Support</span>
+                        <span class="contact-value">+1 (555) 123-4567</span>
+                    </div>
+                </div>
+                
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="contact-info">
+                        <span class="contact-label">Email Support</span>
+                        <span class="contact-value">support@eventvenue.com</span>
+                    </div>
+                </div>
+                
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <div class="contact-info">
+                        <span class="contact-label">Live Chat</span>
+                        <span class="contact-value">Available 24/7</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Action Buttons -->
+<div class="action-buttons">
+    <a href="{% url 'dashboard:booking_history' %}" class="back-btn">
+        <i class="fas fa-arrow-left"></i>
+        Back to History
+    </a>
+    <a href="{% url 'dashboard:dashboard' %}" class="share-btn">
+        <i class="fas fa-home"></i>
+        Dashboard
+    </a>
+</div>
+
+<style>
+/* Booking Detail specific styles */
+.status-banner {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    animation: fadeInUp 0.8s ease-out;
+}
+
+.status-banner.primary {
+    background: rgba(99, 102, 241, 0.2);
+    border-color: var(--primary);
+}
+
+.status-banner.success {
+    background: rgba(16, 185, 129, 0.2);
+    border-color: var(--success);
+}
+
+.status-banner.warning {
+    background: rgba(245, 158, 11, 0.2);
+    border-color: var(--warning);
+}
+
+.status-content {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    color: white;
+}
+
+.status-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.status-text h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.status-text p {
+    opacity: 0.9;
+    font-size: 1rem;
+}
+
+.venue-showcase {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+}
+
+.venue-image {
+    width: 200px;
+    height: 150px;
+    border-radius: 16px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.venue-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.venue-image-placeholder {
+    width: 200px;
+    height: 150px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.venue-image-placeholder i {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.venue-details {
+    flex: 1;
+}
+
+.venue-details h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--gray-800);
+    margin-bottom: 1rem;
+}
+
+.venue-location,
+.venue-capacity,
+.venue-rate {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--gray-600);
+}
+
+.venue-location i,
+.venue-capacity i,
+.venue-rate i {
+    color: var(--primary);
+    width: 16px;
+}
+
+.venue-actions {
+    margin-top: 1.5rem;
+}
+
+.venue-btn {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.venue-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.event-details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.detail-item-large {
+    background: var(--gray-50);
+    padding: 1.5rem;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: all 0.3s ease;
+}
+
+.detail-item-large:hover {
+    background: white;
+    box-shadow: var(--shadow-md);
+    transform: translateY(-3px);
+}
+
+.detail-item-large .detail-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.detail-item-large .detail-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.detail-item-large .detail-label {
+    font-size: 0.9rem;
+    color: var(--gray-500);
+    font-weight: 500;
+}
+
+.detail-item-large .detail-value {
+    font-size: 1.1rem;
+    color: var(--gray-800);
+    font-weight: 600;
+}
+
+.event-timeline {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 2px solid var(--gray-100);
+}
+
+.event-timeline h4 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--gray-800);
+    margin-bottom: 1.5rem;
+}
+
+.timeline {
+    position: relative;
+    padding-left: 3rem;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 1rem;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--gray-200);
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 2rem;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -3rem;
+    top: 0.5rem;
+    width: 12px;
+    height: 12px;
+    background: var(--primary);
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow: 0 0 0 2px var(--primary);
+}
+
+.timeline-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.timeline-title {
+    font-weight: 600;
+    color: var(--gray-800);
+}
+
+.timeline-time {
+    color: var(--gray-600);
+    font-size: 0.9rem;
+}
+
+.summary-details {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.summary-row.total {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.summary-label {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+}
+
+.summary-value {
+    color: white;
+    font-weight: 600;
+}
+
+.summary-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.2);
+    margin: 0.5rem 0;
+}
+
+.booking-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.action-btn-full {
+    width: 100%;
+    padding: 1rem;
+    border: none;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.action-btn-full.warning {
+    background: var(--warning);
+    color: white;
+}
+
+.action-btn-full.warning:hover {
+    background: #d97706;
+    transform: translateY(-2px);
+}
+
+.action-btn-full.success {
+    background: var(--success);
+    color: white;
+}
+
+.action-btn-full.success:hover {
+    background: #059669;
+    transform: translateY(-2px);
+}
+
+.action-btn-full.outline {
+    background: transparent;
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.action-btn-full.outline:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+.contact-options {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--gray-50);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.contact-item:hover {
+    background: white;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+
+.contact-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.contact-label {
+    font-size: 0.8rem;
+    color: var(--gray-500);
+    font-weight: 500;
+}
+
+.contact-value {
+    font-size: 0.9rem;
+    color: var(--gray-800);
+    font-weight: 600;
+}
+
+@media (max-width: 1024px) {
+    .venue-showcase {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    
+    .venue-image,
+    .venue-image-placeholder {
+        width: 100%;
+        height: 200px;
+    }
+    
+    .event-details-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .status-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+    
+    .status-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.2rem;
+    }
+    
+    .timeline {
+        padding-left: 2rem;
+    }
+    
+    .timeline-marker {
+        left: -2rem;
+    }
+    
+    .detail-item-large {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+}
+
+/* Print styles */
+@media print {
+    .floating-shapes,
+    .navbar,
+    .action-buttons,
+    .booking-actions {
+        display: none !important;
+    }
+    
+    .container {
+        padding: 0;
+        max-width: none;
+    }
+    
+    .detail-card,
+    .booking-card {
+        box-shadow: none;
+        border: 1px solid #ddd;
+        break-inside: avoid;
+    }
+    
+    .status-banner {
+        background: #f8f9fa !important;
+        color: #333 !important;
+        border: 2px solid #ddd !important;
+    }
+    
+    .status-content {
+        color: #333 !important;
+    }
+}
+</style>
+{% endblock %}

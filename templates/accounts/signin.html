@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}Sign In - EventVenue{% endblock %}
+
+{% block content %}
+<div class="hero" style="padding: 2rem 0; margin-bottom: 2rem;">
+    <h1 style="font-size: 2.5rem;">Welcome Back</h1>
+    <p>Sign in to your EventVenue account and continue your venue discovery journey</p>
+</div>
+
+<div class="content-card" style="max-width: 450px; margin: 0 auto;">
+    <div class="card-title">
+        <i class="fas fa-sign-in-alt"></i>
+        Sign In
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}" style="background: {% if message.tags == 'error' %}var(--error){% else %}var(--success){% endif %}; color: white; padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-{% if message.tags == 'error' %}exclamation-triangle{% else %}check-circle{% endif %}"></i>
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post" action="{% url 'accounts:login' %}" id="loginForm">
+        {% csrf_token %}
+        
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label for="username" style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--gray-700);">Username</label>
+            <input
+                type="text"
+                id="username"
+                name="username"
+                placeholder="Enter your username"
+                required
+                style="width: 100%; padding: 1rem; border: 2px solid var(--gray-200); border-radius: 12px; font-size: 1rem; transition: all 0.3s ease; background: var(--gray-50);"
+                onfocus="this.style.borderColor='var(--primary)'; this.style.background='white'; this.style.transform='translateY(-2px)'"
+                onblur="this.style.borderColor='var(--gray-200)'; this.style.background='var(--gray-50)'; this.style.transform='translateY(0)'"
+            />
+        </div>
+
+        <div class="form-group" style="margin-bottom: 2rem;">
+            <label for="password" style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--gray-700);">Password</label>
+            <div style="position: relative;">
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="••••••••"
+                    required
+                    style="width: 100%; padding: 1rem; border: 2px solid var(--gray-200); border-radius: 12px; font-size: 1rem; transition: all 0.3s ease; background: var(--gray-50); padding-right: 3rem;"
+                    onfocus="this.style.borderColor='var(--primary)'; this.style.background='white'; this.style.transform='translateY(-2px)'"
+                    onblur="this.style.borderColor='var(--gray-200)'; this.style.background='var(--gray-50)'; this.style.transform='translateY(0)'"
+                />
+                <button
+                    type="button"
+                    id="togglePassword"
+                    style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--gray-500); cursor: pointer; font-size: 1rem;"
+                    onclick="togglePasswordVisibility()"
+                >
+                    <i class="fas fa-eye" id="passwordIcon"></i>
+                </button>
+            </div>
+        </div>
+
+        <button 
+            type="submit" 
+            class="view-btn" 
+            style="width: 100%; margin-bottom: 1.5rem; justify-content: center; padding: 1.2rem 2rem; font-size: 1.1rem;"
+            id="loginButton"
+        >
+            <i class="fas fa-sign-in-alt"></i>
+            Sign In
+        </button>
+    </form>
+
+    {% comment %} <div style="text-align: center; margin-bottom: 1.5rem;">
+        <a href="#" style="color: var(--primary); text-decoration: none; font-weight: 500; font-size: 0.9rem;">
+            <i class="fas fa-key"></i>
+            Forgot your password?
+        </a>
+    </div> {% endcomment %}
+
+    <div style="text-align: center; padding-top: 1.5rem; border-top: 1px solid var(--gray-200);">
+        <p style="color: var(--gray-600); margin-bottom: 1rem;">Don't have an account?</p>
+        <a href="{% url 'accounts:register' %}" class="contact-btn" style="background: var(--gray-100); color: var(--gray-800); border-color: var(--gray-300); text-decoration: none; display: inline-flex;">
+            <i class="fas fa-user-plus"></i>
+            Create Account
+        </a>
+    </div>
+</div>
+
+<script>
+// Password visibility toggle
+function togglePasswordVisibility() {
+    const passwordField = document.getElementById('password');
+    const passwordIcon = document.getElementById('passwordIcon');
+    
+    if (passwordField.type === 'password') {
+        passwordField.type = 'text';
+        passwordIcon.className = 'fas fa-eye-slash';
+    } else {
+        passwordField.type = 'password';
+        passwordIcon.className = 'fas fa-eye';
+    }
+}
+
+// Form submission with loading state
+document.getElementById('loginForm').addEventListener('submit', function() {
+    const button = document.getElementById('loginButton');
+    const originalContent = button.innerHTML;
+    
+    button.disabled = true;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing In...';
+    button.style.opacity = '0.7';
+    
+    // Restore button after 5 seconds if no redirect (for error cases)
+    setTimeout(() => {
+        button.disabled = false;
+        button.innerHTML = originalContent;
+        button.style.opacity = '1';
+    }, 5000);
+});
+
+// Enhanced form validation
+document.getElementById('loginForm').addEventListener('submit', function(e) {
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value;
+    
+    if (!username) {
+        e.preventDefault();
+        alert('Please enter your username');
+        document.getElementById('username').focus();
+        return false;
+    }
+    
+    if (!password) {
+        e.preventDefault();
+        alert('Please enter your password');
+        document.getElementById('password').focus();
+        return false;
+    }
+});
+
+// Auto-focus on username field when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('username').focus();
+});
+</script>
+{% endblock %}

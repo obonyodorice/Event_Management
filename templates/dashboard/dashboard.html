@@ -1,0 +1,627 @@
+{% extends '../base.html' %}
+
+{% block title %}Dashboard - EventVenue{% endblock %}
+
+{% block content %}
+<!-- Dashboard Hero -->
+<div class="hero">
+    <h1>Welcome back, {{ user.first_name|default:user.username }}!</h1>
+    <p>Manage your venue bookings and track your event history</p>
+</div>
+
+<!-- Dashboard Stats -->
+<div class="stats-section">
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fas fa-calendar-check"></i>
+        </div>
+        <span class="stat-number">{{ total_bookings }}</span>
+        <span class="stat-label">Total Bookings</span>
+    </div>
+    
+    {% comment %} <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fas fa-dollar-sign"></i>
+        </div>
+        <span class="stat-number">${{ total_spent|floatformat:0 }}</span>
+        <span class="stat-label">Total Spent</span>
+    </div> {% endcomment %}
+    
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fas fa-clock"></i>
+        </div>
+        <span class="stat-number">{{ upcoming_bookings_count }}</span>
+        <span class="stat-label">Upcoming Events</span>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <span class="stat-number">{{ past_bookings_count }}</span>
+        <span class="stat-label">Completed Events</span>
+    </div>
+</div>
+
+<!-- Main Dashboard Grid -->
+<div class="venue-content-grid">
+    <div class="venue-main-content">
+        <!-- Upcoming Bookings -->
+        {% if upcoming_bookings %}
+        <div class="detail-card">
+            <h2 class="card-title">
+                <i class="fas fa-calendar-alt"></i>
+                Upcoming Events
+            </h2>
+            
+            <div class="bookings-list">
+                {% for booking in upcoming_bookings %}
+                <div class="booking-item upcoming">
+                    <div class="booking-header">
+                        <div class="booking-venue">
+                            <h4>{{ booking.venue.name }}</h4>
+                            <div class="booking-location">
+                                <i class="fas fa-map-marker-alt"></i>
+                                {{ booking.venue.location }}
+                            </div>
+                        </div>
+                        <div class="booking-status upcoming">
+                            <i class="fas fa-clock"></i>
+                            Upcoming
+                        </div>
+                    </div>
+                    
+                    <div class="booking-details">
+                        <div class="detail-item">
+                            <i class="fas fa-calendar"></i>
+                            <span>{{ booking.event_date|date:"M d, Y" }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-clock"></i>
+                            <span>{{ booking.start_time|time:"g:i A" }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-hourglass-half"></i>
+                            <span>{{ booking.duration }} hours</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-users"></i>
+                            <span>{{ booking.guests }} guests</span>
+                        </div>
+                    </div>
+                    
+                    <div class="booking-actions">
+                        <span class="booking-price">${{ booking.total_price }}</span>
+                        <a href="{% url 'dashboard:booking_detail' booking.id %}" class="view-booking-btn">
+                            <i class="fas fa-eye"></i>
+                            View Details
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            {% comment %} <div class="card-footer">
+                <a href="{% url 'dashboard:booking_history' %}?status=upcoming" class="view-all-btn">
+                    View All Upcoming Events
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div> {% endcomment %}
+        </div>
+        {% endif %}
+        
+        <!-- Recent Bookings -->
+        {% if recent_bookings %}
+        <div class="detail-card">
+            <h2 class="card-title">
+                <i class="fas fa-history"></i>
+                Recent Bookings
+            </h2>
+            
+            <div class="bookings-list">
+                {% for booking in recent_bookings %}
+                <div class="booking-item {% if booking.event_date < today %}completed{% else %}upcoming{% endif %}">
+                    <div class="booking-header">
+                        <div class="booking-venue">
+                            <h4>{{ booking.venue.name }}</h4>
+                            <div class="booking-date">
+                                <i class="fas fa-calendar"></i>
+                                {{ booking.event_date|date:"M d, Y" }}
+                            </div>
+                        </div>
+                        <div class="booking-status {% if booking.event_date < today %}completed{% else %}upcoming{% endif %}">
+                            {% if booking.event_date < today %}
+                                <i class="fas fa-check-circle"></i>
+                                Completed
+                            {% else %}
+                                <i class="fas fa-clock"></i>
+                                Upcoming
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="booking-summary">
+                        <span class="booking-info">{{ booking.duration }} hours • {{ booking.guests }} guests</span>
+                        <span class="booking-price">${{ booking.total_price }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            {% comment %} <div class="card-footer">
+                <a href="{% url 'dashboard:booking_history' %}" class="view-all-btn">
+                    View Complete History
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div> {% endcomment %}
+        </div>
+        {% endif %}
+        
+        <!-- No Bookings State -->
+        {% if not total_bookings %}
+        <div class="detail-card">
+            <div class="no-bookings">
+                <div class="no-bookings-icon">
+                    <i class="fas fa-calendar-times"></i>
+                </div>
+                <h3>No Bookings Yet</h3>
+                <p>Start exploring our amazing venues and book your first event!</p>
+                <a href="{% url 'venue:list' %}" class="explore-btn">
+                    <i class="fas fa-search"></i>
+                    Explore Venues
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Dashboard Sidebar -->
+    <div class="venue-sidebar">
+        <!-- Quick Actions -->
+        <div class="booking-card">
+            <h3 class="booking-card-title">Quick Actions</h3>
+            
+            <div class="quick-actions">
+                <a href="{% url 'venue:list' %}" class="action-btn primary">
+                    <i class="fas fa-plus"></i>
+                    Book New Venue
+                </a>
+                
+                {% comment %} <a href="{% url 'dashboard:booking_history' %}" class="action-btn secondary">
+                    <i class="fas fa-list"></i>
+                    View All Bookings
+                </a> {% endcomment %}
+                
+            </div>
+        </div>
+        
+        <!-- Favorite Venues 
+        {% if favorite_venues %}
+        <div class="detail-card">
+            <h3 class="card-title">
+                <i class="fas fa-heart"></i>
+                Your Favorite Venues
+            </h3>
+            
+            <div class="favorite-venues">
+                {% for venue in favorite_venues %}
+                <div class="favorite-venue-item">
+                    <div class="venue-info">
+                        <h5>{{ venue.venue__name }}</h5>
+                        <span class="booking-count">{{ venue.booking_count }} booking{{ venue.booking_count|pluralize }}</span>
+                    </div>
+                    <a href="{% url 'venue:detail' venue.venue__id %}" class="venue-link">"
+                        <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        -->
+        
+        <!-- Booking Calendar 
+        <div class="detail-card">
+            <h3 class="card-title">
+                <i class="fas fa-chart-line"></i>
+                Booking Activity
+            </h3>
+            
+            <div class="activity-chart">
+                <div class="chart-info">
+                    <p>Your booking activity over the last 6 months</p>
+                </div>
+                
+                <div class="monthly-stats">
+                    {% for month_data in monthly_bookings %}
+                    <div class="month-stat">
+                        <div class="month-bar">
+                            
+                            <div class="bar-fill" style="height: {% if month_data.count %}{% widthratio month_data.count 1 20 %}px{% else %}2px{% endif %};"></div>
+                        </div>
+                        <span class="month-label">{{ month_data.month|slice:":3" }}</span>
+                        <span class="month-count">{{ month_data.count }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        -->
+
+
+    </div>
+</div>
+
+<style>
+/* Dashboard specific styles using your existing variables */
+.bookings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.booking-item {
+    background: var(--gray-50);
+    border-radius: 16px;
+    padding: 1.5rem;
+    border-left: 4px solid var(--primary);
+    transition: all 0.3s ease;
+}
+
+.booking-item:hover {
+    transform: translateX(5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.booking-item.upcoming {
+    border-left-color: var(--primary);
+}
+
+.booking-item.completed {
+    border-left-color: var(--success);
+}
+
+.booking-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.booking-venue h4 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--gray-800);
+    margin-bottom: 0.25rem;
+}
+
+.booking-location, .booking-date {
+    color: var(--gray-500);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.booking-status {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.booking-status.upcoming {
+    background: rgba(99, 102, 241, 0.1);
+    color: var(--primary);
+}
+
+.booking-status.completed {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success);
+}
+
+.booking-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.booking-details .detail-item {
+    background: white;
+    padding: 0.75rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.booking-details .detail-item i {
+    color: var(--primary);
+    width: 16px;
+}
+
+.booking-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.booking-price {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--primary);
+}
+
+.view-booking-btn {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.view-booking-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.booking-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.booking-info {
+    color: var(--gray-600);
+    font-size: 0.9rem;
+}
+
+.card-footer {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid var(--gray-100);
+    text-align: center;
+}
+
+.view-all-btn {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.view-all-btn:hover {
+    color: var(--primary-dark);
+    transform: translateX(5px);
+}
+
+.no-bookings {
+    text-align: center;
+    padding: 3rem 2rem;
+}
+
+.no-bookings-icon {
+    font-size: 4rem;
+    color: var(--gray-300);
+    margin-bottom: 1.5rem;
+}
+
+.no-bookings h3 {
+    font-size: 1.5rem;
+    color: var(--gray-700);
+    margin-bottom: 1rem;
+}
+
+.no-bookings p {
+    color: var(--gray-500);
+    margin-bottom: 2rem;
+}
+
+.explore-btn {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.explore-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+}
+
+.quick-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.action-btn {
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.action-btn.primary {
+    background: var(--success);
+    color: white;
+}
+
+.action-btn.primary:hover {
+    background: #059669;
+    transform: translateY(-2px);
+}
+
+.action-btn.secondary {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.action-btn.secondary:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.action-btn.outline {
+    background: transparent;
+    color: white;
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.action-btn.outline:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.favorite-venues {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.favorite-venue-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: var(--gray-50);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.favorite-venue-item:hover {
+    background: white;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.favorite-venue-item h5 {
+    font-weight: 600;
+    color: var(--gray-800);
+    margin-bottom: 0.25rem;
+}
+
+.booking-count {
+    color: var(--gray-500);
+    font-size: 0.8rem;
+}
+
+.venue-link {
+    color: var(--primary);
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.venue-link:hover {
+    background: rgba(99, 102, 241, 0.1);
+    transform: scale(1.1);
+}
+
+.activity-chart {
+    padding: 1rem 0;
+}
+
+.chart-info {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.chart-info p {
+    color: var(--gray-600);
+    font-size: 0.9rem;
+}
+
+.monthly-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 0.5rem;
+    height: 120px;
+    padding: 1rem 0;
+}
+
+.month-stat {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.month-bar {
+    height: 80px;
+    width: 100%;
+    background: var(--gray-100);
+    border-radius: 4px;
+    display: flex;
+    align-items: end;
+    overflow: hidden;
+}
+
+.bar-fill {
+    width: 100%;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 4px 4px 0 0;
+    min-height: 2px;
+    transition: height 0.5s ease;
+}
+
+.month-label {
+    font-size: 0.8rem;
+    color: var(--gray-600);
+    font-weight: 500;
+}
+
+.month-count {
+    font-size: 0.7rem;
+    color: var(--gray-500);
+}
+
+@media (max-width: 768px) {
+    .booking-details {
+        grid-template-columns: 1fr;
+    }
+    
+    .booking-actions {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+    
+    .view-booking-btn {
+        justify-content: center;
+    }
+    
+    .monthly-stats {
+        gap: 0.25rem;
+    }
+}
+</style>
+{% endblock %}

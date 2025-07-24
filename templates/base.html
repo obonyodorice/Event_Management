@@ -1,0 +1,169 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}EventVenue{% endblock %}</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'styles/style.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="floating-shapes"></div>
+    
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <i class="fas fa-map-marker-alt"></i>
+                EventVenue
+            </a>
+            {% if user.is_authenticated %}
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="{% url 'dashboard:dashboard' %}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="{% url 'venue:list' %}"><i class="fas fa-building"></i> Venues</a></li>
+                    {% comment %} <li><a href="{% url 'dashboard:booking_history' %}"><i class="fas fa-history"></i> My Bookings</a></li> {% endcomment %}
+                    <li><a href="{% url 'accounts:logout' %}"><i class="fas fa-sign-out-alt"></i> Sign Out</a></li>
+                </ul>
+            {% else %} 
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="{% url 'accounts:login' %}"><i class="fas fa-sign-in-alt"></i> Sign In</a></li>
+                    <li><a href="{% url 'accounts:register' %}"><i class="fas fa-user-plus"></i> Get Started</a></li>
+                </ul>                   
+            {% endif %}
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>EventVenue</span>
+                    </div>
+                    <p class="footer-description">
+                        Premium venue booking for unforgettable events.
+                    </p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4 class="footer-title">Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="{% url 'venue:list' %}">Venues</a></li>
+                        {% if user.is_authenticated %}
+                        <li><a href="{% url 'dashboard:dashboard' %}">Dashboard</a></li>
+                        {% else %}
+                        <li><a href="{% url 'accounts:login' %}">Sign In</a></li>
+                        {% endif %}
+                        <li><a href="#">About</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4 class="footer-title">Support</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Help</a></li>
+                        <li><a href="#">Privacy</a></li>
+                        <li><a href="#">Terms</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <div class="footer-social">
+                        <a href="#" class="social-link">
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                    <p class="footer-copyright">&copy; {% now "Y" %} EventVenue</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const navLinks = document.getElementById('navLinks');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            const icon = mobileMenuBtn.querySelector('i');
+            if (navLinks.classList.contains('active')) {
+                icon.className = 'fas fa-times';
+            } else {
+                icon.className = 'fas fa-bars';
+            }
+        });
+
+        // Navbar scroll effect
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Loading animation
+        window.addEventListener('load', () => {
+            const loadingOverlay = document.querySelector('.loading-overlay');
+            if (loadingOverlay) {
+                loadingOverlay.classList.add('hidden');
+                setTimeout(() => {
+                    loadingOverlay.remove();
+                }, 500);
+            }
+        });
+
+        // Add intersection observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animationPlayState = 'running';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all animated elements
+        document.querySelectorAll('.content-card, .hero h1, .hero p').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
