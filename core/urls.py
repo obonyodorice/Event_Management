@@ -26,6 +26,7 @@ urlpatterns = [
     path('venue/',include('venue.urls')), 
     path('bookings/', include('bookings.urls')),  # Include URLs from the venue app
     path('users/', include('accounts.urls')),
+    path('dashboard/', include('dashboard.urls')),  # Include URLs from the dashboard app
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
