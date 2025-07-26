@@ -67,26 +67,26 @@ def dashboard(request):
     
     return render(request, 'dashboard/dashboard.html', context)
 
-@login_required
-def booking_history(request):
-    user = request.user
-    bookings = Booking.objects.filter(user=user).order_by('-created_at')
+# @login_required
+# def booking_history(request):
+#     user = request.user
+#     bookings = Booking.objects.filter(user=user).order_by('-created_at')
     
-    # Filter by status if needed
-    status_filter = request.GET.get('status')
-    if status_filter == 'upcoming':
-        today = timezone.now().date()
-        bookings = bookings.filter(event_date__gte=today)
-    elif status_filter == 'past':
-        today = timezone.now().date()
-        bookings = bookings.filter(event_date__lt=today)
+#     # Filter by status if needed
+#     status_filter = request.GET.get('status')
+#     if status_filter == 'upcoming':
+#         today = timezone.now().date()
+#         bookings = bookings.filter(event_date__gte=today)
+#     elif status_filter == 'past':
+#         today = timezone.now().date()
+#         bookings = bookings.filter(event_date__lt=today)
     
-    context = {
-        'bookings': bookings,
-        'status_filter': status_filter,
-    }
+#     context = {
+#         'bookings': bookings,
+#         'status_filter': status_filter,
+#     }
     
-    return render(request, 'dashboard/booking_history.html', context)
+#     return render(request, 'dashboard/booking_history.html', context)
 
 @login_required
 def booking_detail(request, booking_id):
