@@ -22,7 +22,7 @@ def dashboard(request):
     upcoming_bookings = bookings.filter(event_date__gte=today).order_by('event_date')[:3]
     
     # Get recent bookings (last 3)
-    recent_bookings = bookings[:3]
+    recent_bookings = bookings[:1]
     
     # Get booking status counts (you can extend this based on your booking status field)
     # For now, we'll categorize by date
