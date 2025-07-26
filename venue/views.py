@@ -9,7 +9,8 @@ class VenueListView(ListView):
     paginate_by = 6
 
     def get_queryset(self):
-        return Venue.objects.filter(is_available=True).order_by('-created_at')
+        # return Venue.objects.filter(is_available=True).order_by('-created_at')
+        return Venue.objects.all().order_by('-created_at')
 
 def venue_detail(request, pk):
     venue = get_object_or_404(Venue, pk=pk)
