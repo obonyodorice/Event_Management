@@ -92,11 +92,8 @@
                     </div>
                     
                     <div class="booking-actions">
-                        <span class="booking-price">${{ booking.total_price }}</span>
-                        <a href="{% url 'dashboard:booking_detail' booking.id %}" class="view-booking-btn">
-                            <i class="fas fa-eye"></i>
-                            View Details
-                        </a>
+                        <span class="booking-price">KES {{ booking.total_price }}</span>
+                        
                     </div>
                 </div>
                 {% endfor %}
@@ -116,7 +113,7 @@
         <div class="detail-card">
             <h2 class="card-title">
                 <i class="fas fa-history"></i>
-                Recent Bookings
+                Recent Booking
             </h2>
             
             <div class="bookings-list">
