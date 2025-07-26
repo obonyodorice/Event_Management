@@ -22,13 +22,13 @@
                 <ul class="nav-links" id="navLinks">
                     <li><a href="{% url 'dashboard:dashboard' %}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
                     <li><a href="{% url 'venue:list' %}"><i class="fas fa-building"></i> Venues</a></li>
-                    {% comment %} <li><a href="{% url 'dashboard:booking_history' %}"><i class="fas fa-history"></i> My Bookings</a></li> {% endcomment %}
                     <li><a href="{% url 'accounts:logout' %}"><i class="fas fa-sign-out-alt"></i> Sign Out</a></li>
                 </ul>
             {% else %} 
                 <ul class="nav-links" id="navLinks">
                     <li><a href="{% url 'accounts:login' %}"><i class="fas fa-sign-in-alt"></i> Sign In</a></li>
-                    <li><a href="{% url 'accounts:register' %}"><i class="fas fa-user-plus"></i> Get Started</a></li>
+                    <li><a href="{% url 'contact' %}"><i class="fas fa-envelope"></i> Contact Us</a></li>
+                    <li><a href="{% url 'about' %}"><i class="fas fa-info-circle"></i> About Us</a></li>
                 </ul>                   
             {% endif %}
             <button class="mobile-menu-btn" id="mobileMenuBtn">
@@ -58,14 +58,14 @@
                 <div class="footer-section">
                     <h4 class="footer-title">Links</h4>
                     <ul class="footer-links">
-                        <li><a href="{% url 'venue:list' %}">Venues</a></li>
+                        {% comment %} <li><a href="{% url 'venue:list' %}">Venues</a></li> {% endcomment %}
                         {% if user.is_authenticated %}
                         <li><a href="{% url 'dashboard:dashboard' %}">Dashboard</a></li>
                         {% else %}
                         <li><a href="{% url 'accounts:login' %}">Sign In</a></li>
                         {% endif %}
-                        <li><a href="#">About</a></li>
-                        <li><a href="#">Contact</a></li>
+                        <li><a href="{% url 'about' %}">About</a></li>
+                        <li><a href="{% url 'contact' %}">Contact</a></li>
                     </ul>
                 </div>
                 

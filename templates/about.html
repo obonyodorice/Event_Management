@@ -1,0 +1,405 @@
+{% extends './base.html' %}
+{% load static %}
+
+{% block title %}About Us - EventVenue{% endblock %}
+
+{% block meta_description %}Learn about EventVenue's mission to connect people with perfect event spaces. Discover our story, team, and commitment to exceptional venue experiences.{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero">
+    <h1>About EventVenue</h1>
+    <p>Connecting people with perfect spaces for unforgettable moments</p>
+</div>
+
+<!-- Mission Section -->
+<div class="content-card">
+    <div class="about-mission">
+        <div class="mission-content">
+            <h2>Our Mission</h2>
+            <p class="mission-statement">
+                At EventVenue, we believe every event deserves the perfect space. Our mission is to simplify venue discovery and booking, connecting event organizers with exceptional spaces that bring their visions to life.
+            </p>
+            <p>
+                Whether you're planning an intimate wedding, corporate conference, birthday celebration, or any special gathering, we're here to help you find the ideal venue that matches your style, budget, and requirements.
+            </p>
+        </div>
+        <div class="mission-image">
+            <div class="image-placeholder">
+                <i class="fas fa-heart"></i>
+                <span>Perfect Moments</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Section -->
+<div class="stats-section">
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fas fa-building"></i>
+        </div>
+        <span class="stat-number">{{ stats.venues }}+</span>
+        <span class="stat-label">Premium Venues</span>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fas fa-calendar-check"></i>
+        </div>
+        <span class="stat-number">{{ stats.events }}+</span>
+        <span class="stat-label">Events Hosted</span>
+    </div>
+
+    
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fas fa-map-marker-alt"></i>
+        </div>
+        <span class="stat-number">{{ stats.cities }}+</span>
+        <span class="stat-label">Cities Served</span>
+    </div>
+</div>
+
+<!-- Story Section -->
+<div class="venue-content-grid">
+    <div class="venue-main-content">
+
+        {% comment %} <!-- Values -->
+        <div class="detail-card">
+            <h2 class="card-title">
+                <i class="fas fa-star"></i>
+                Our Values
+            </h2>
+            <div class="values-grid">
+                <div class="value-item">
+                    <div class="value-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <div class="value-content">
+                        <h4>Customer First</h4>
+                        <p>Every decision we make starts with our customers' needs and experiences in mind.</p>
+                    </div>
+                </div>
+                
+                <div class="value-item">
+                    <div class="value-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="value-content">
+                        <h4>Trust & Transparency</h4>
+                        <p>We believe in honest communication and transparent pricing with no hidden fees.</p>
+                    </div>
+                </div>
+                
+                <div class="value-item">
+                    <div class="value-icon">
+                        <i class="fas fa-gem"></i>
+                    </div>
+                    <div class="value-content">
+                        <h4>Quality Excellence</h4>
+                        <p>We carefully curate our venue partners to ensure exceptional experiences.</p>
+                    </div>
+                </div>
+                
+                <div class="value-item">
+                    <div class="value-icon">
+                        <i class="fas fa-handshake"></i>
+                    </div>
+                    <div class="value-content">
+                        <h4>Partnership</h4>
+                        <p>We build lasting relationships with venues and customers based on mutual success.</p>
+                    </div>
+                </div>
+            </div>
+        </div> {% endcomment %}
+    </div>
+
+    <!-- Sidebar -->
+    <div class="venue-sidebar">
+
+        {% comment %} <!-- Quick Facts -->
+        <div class="detail-card">
+            <h3 class="card-title">
+                <i class="fas fa-info-circle"></i>
+                Quick Facts
+            </h3>
+            <div class="quick-facts">
+                <div class="fact-item">
+                    <strong>Founded:</strong> 2020
+                </div>
+                <div class="fact-item">
+                    <strong>Headquarters:</strong> San Francisco, CA
+                </div>
+            
+                <div class="fact-item">
+                    <strong>Response Time:</strong> Under 2 hours
+                </div>
+                <div class="fact-item">
+                    <strong>Available:</strong> 24/7 customer support
+                </div>
+            </div>
+        </div> {% endcomment %}
+    </div>
+</div>
+
+<!-- Team Section -->
+<div class="content-card">
+    <h2 class="section-title">Meet Our Team</h2>
+    <div class="team-grid">
+        {% for member in team_members %}
+        <div class="team-member">
+            <div class="member-image">
+                {% if member.image %}
+                    <img src="{% static member.image %}" alt="{{ member.name }}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="member-placeholder" style="display: none;">
+                        <i class="fas fa-user"></i>
+                    </div>
+                {% else %}
+                    <div class="member-placeholder">
+                        <i class="fas fa-user"></i>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="member-info">
+                <h4 class="member-name">{{ member.name }}</h4>
+                <p class="member-position">{{ member.position }}</p>
+                <p class="member-bio">{{ member.bio }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Action Buttons -->
+<div class="action-buttons">
+    <a href="{% url 'accounts:login' %}" class="back-btn">
+        <i class="fas fa-building"></i>
+        Browse Venues
+    </a>
+    <a href="{% url 'contact' %}" class="share-btn">
+        <i class="fas fa-envelope"></i>
+        Contact Us
+    </a>
+</div>
+
+<style>
+/* About Page Specific Styles */
+.about-mission {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 3rem;
+    align-items: center;
+}
+
+.mission-content h2 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--gray-800);
+    margin-bottom: 2rem;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.mission-statement {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.mission-content p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--gray-600);
+    margin-bottom: 1.5rem;
+}
+
+.mission-image {
+    display: flex;
+    justify-content: center;
+}
+
+.image-placeholder {
+    width: 200px;
+    height: 200px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.image-placeholder i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.story-content p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--gray-600);
+    margin-bottom: 1.5rem;
+}
+
+.values-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+}
+
+.value-item {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+}
+
+.value-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.value-content h4 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--gray-800);
+    margin-bottom: 0.5rem;
+}
+
+.value-content p {
+    color: var(--gray-600);
+    line-height: 1.6;
+}
+
+.quick-facts {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.fact-item {
+    padding: 1rem;
+    background: var(--gray-50);
+    border-radius: 12px;
+    font-size: 0.9rem;
+}
+
+.fact-item strong {
+    color: var(--gray-800);
+}
+
+.section-title {
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--gray-800);
+    margin-bottom: 3rem;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.team-member {
+    text-align: center;
+    padding: 2rem;
+    background: var(--gray-50);
+    border-radius: 20px;
+    transition: all 0.3s ease;
+}
+
+.team-member:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+    background: white;
+}
+
+.member-image {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 1.5rem;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid white;
+    box-shadow: var(--shadow-lg);
+}
+
+.member-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.member-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2rem;
+}
+
+.member-name {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--gray-800);
+    margin-bottom: 0.5rem;
+}
+
+.member-position {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 1rem;
+}
+
+.member-bio {
+    font-size: 0.9rem;
+    color: var(--gray-600);
+    line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+    .about-mission {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        text-align: center;
+    }
+    
+    .values-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .team-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .mission-content h2 {
+        font-size: 2rem;
+    }
+}
+</style>
+{% endblock %}
