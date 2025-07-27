@@ -21,16 +21,19 @@ def create_booking(request, venue_id):
                 start_time=request.POST.get('start_time'),
                 duration=duration,
                 guests=int(request.POST.get('guests')),
-                total_price=total_price
+                total_price=total_price,
             )
+
+            venue.is_available = False
+            venue.save()
             
-            messages.success(request, 'Booking created successfully!')
             return redirect('bookings:booking_success', booking_id=booking.id)
             
         except Exception as e:
-            messages.error(request, 'Error creating booking. Please try again.')
+            print(f"Error creating booking: {e}")
+            messages.error(request, f'Error creating booking: {str(e)}')
     
-    return redirect('venue:venue_detail', venue_id=venue_id)
+    return redirect('venue:detail', pk=venue_id)
 
 def booking_success(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id)
