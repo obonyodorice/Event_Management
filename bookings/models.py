@@ -8,7 +8,7 @@ class Booking(models.Model):
     start_time = models.TimeField()
     duration = models.IntegerField()  # hours
     guests = models.IntegerField()
-    total_price = models.DecimalField(max_digits=10, decimal_places=2)
+    total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     
     class Meta:
